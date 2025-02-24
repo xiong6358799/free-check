@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>基层减负合规检测</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <h2>请输入待检测内容：</h2>
+    <textarea id="input" rows="5" cols="50"></textarea><br>
+    <button onclick="check()">立即检测</button>
+    <div id="result"></div>
+
+    <script>
+    async function check() {
+        const API_KEY = "sk-980347dbed6b4308b7df0b27c5babc46";
+        const inputText = document.getElementById("input").value;
+        
+        document.getElementById("result").innerHTML = "分析中...";
+        
+        try {
+            const response = await fetch("https://api.deepseek.com/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${API_KEY}`
+                },
+                body: JSON.stringify({
+                    model: "deepseek-chat",
+                    messages: [{
+                        role: "user",
+                        content: `请严格判断以下内容是否违反基层减负政策要求，仅回复"合规"或"违规"：\n${inputText}`
+                    }]
+                })
+            });
+
+            const data = await response.json();
+            const result = data.choices[0].message.content;
+            document.getElementById("result").innerHTML = `检测结果：<strong>${result}</strong>`;
+        } catch (error) {
+            document.getElementById("result").innerHTML = "检测失败，请重试";
+        }
+    }
+    </script>
+</body>
+</html>
